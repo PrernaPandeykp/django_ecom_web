@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+	<title>Ecomm</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+	<script>
+		var user='{{request.user}}'
+		function getToken(name) {
+			let cookieValue = null;
+			if (document.cookie && document.cookie !== '') {
+				const cookies = document.cookie.split(';');
+				for (let i = 0; i < cookies.length; i++) {
+					const cookie = cookies[i].trim();
+					// Does this cookie string begin with the name we want?
+					if (cookie.substring(0, name.length + 1) === (name + '=')) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+		var csrftoken = getToken('csrftoken');
+
+		function getCookie(name){
+			//split cookie string and get all individual name value pairs in an array
+			var cookieArr =document.cookie.split(";");
+
+			//loop through the array elements
+			for(var i=0;i<cookieArr.length;i++){
+				var cookiePair =cookieArr[i].split("=");
+
+				//removing wihtespace at begining of the cookie name and compare it with given string
+				if(name ==cookiePair[0].trim()){
+					//decode the cookie value and return 
+
+					return decodeURIComponent(cookiePair[1]);
+				}
+			}
+			//return null if not found
+			return null;
+		}
+		var cart=JSON.parse(getCookie('cart'))
+		// console.log('cart:',cart)
+
+		if(cart ==undefined){
+			cart={}
+			console.log("cart created")
+			document.cookie ="cart=" +JSON.stringify(cart) +";domain=;path=/"
+		}
+		console.log('cart:',cart)
+	</script>
+</head>
+<body>
+
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	  <a class="navbar-brand" href="{% url 'store' %}">Ecom</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+
+	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	        <a class="nav-link" href="{% url 'store' %}">Store <span class="sr-only">(current)</span></a>
+	      </li>
+	 
+	    </ul>
+	    <div class="form-inline my-2 my-lg-0">
+	     	<a href="#"class="btn btn-warning">Login</a>
+	     	
+	     	<a href="{% url 'cart' %}">
+	    		<img  id="cart-icon" src="data:image/png;base64,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">
+	    	</a>
+	    	<p id="cart-total">{{cartItems}}</p>
+
+	    </div>
+	  </div>
+	</nav>
+
+     <div class="container">
+            <br>
+            {% block content %}
+
+
+            {% endblock content %}
+         </div>
+
+
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></scrip>
+
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+</body>
+</html>
